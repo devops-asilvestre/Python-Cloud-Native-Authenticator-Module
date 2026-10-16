@@ -1,0 +1,1 @@
+"""EventBridge and SQS adapters."""
