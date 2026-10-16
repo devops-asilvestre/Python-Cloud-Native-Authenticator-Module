@@ -7,6 +7,7 @@ delimitam o scaffold, não funcionalidades de autenticação já prontas.
 ## Conteúdo
 
 - [Visão arquitetural](architecture/overview.md)
+- [Arquitetura estratégica: domínios e bounded contexts](../docs/architecture/README.md)
 - [Histórias iniciais](user_stories/initial-scope.md)
 - [Decisão arquitetural 0001](adr/0001-clean-architecture.md)
 - [Baseline de segurança](security/baseline.md)
@@ -28,10 +29,10 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-uvicorn identity_service.main:app --reload --app-dir src
+uvicorn identity_service.main:app --reload --app-dir src --port 8001
 ```
 
-A API inicia em `http://127.0.0.1:8000`. A documentação OpenAPI fica disponível
+A API inicia em `http://127.0.0.1:8001`. A documentação OpenAPI fica disponível
 em `/docs` no ambiente local; `/health/live` fornece a verificação de liveness.
 
 ## Verificações locais
