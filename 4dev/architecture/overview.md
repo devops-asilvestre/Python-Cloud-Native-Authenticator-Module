@@ -1,5 +1,9 @@
 # Visão arquitetural
 
+Para a proposta de DDD estratégico, bounded contexts, context map, mapa de
+serviços e catálogo de eventos, consulte
+[Arquitetura estratégica de domínio](../../docs/architecture/README.md).
+
 ## Objetivo
 
 Construir uma plataforma corporativa de identidade e acesso em Python, orientada
