@@ -1,33 +1,34 @@
 # Ambiente local Docker
 
-[`compose.yaml`](compose.yaml) inicia dependências locais para desenvolvimento:
+[`compose.yaml`](compose.yaml) inicia somente dependências locais:
 PostgreSQL, Redis, DynamoDB Local, Jaeger, Prometheus, Grafana, Mailpit e
 OpenTelemetry Collector. LocalStack não é utilizado. A aplicação não é
-construída nem iniciada por este Compose; o scaffold atual é executado à parte.
+construída nem iniciada por este Compose.
 
-## Iniciar
+## Operação
 
-Docker Compose e dois valores de ambiente locais são necessários. Defina
-`POSTGRES_PASSWORD` e `GRAFANA_ADMIN_PASSWORD` no ambiente do processo, sem
-registrá-los no repositório, e execute na raiz:
+Defina `POSTGRES_PASSWORD` e `GRAFANA_ADMIN_PASSWORD` no ambiente do processo
+conforme o guia de [desenvolvimento local](../../LOCAL_DEVELOPMENT.md). Não
+grave os valores no repositório. Na raiz, execute:
 
-```powershell
-docker compose -f infrastructure/docker/compose.yaml up -d
-docker compose -f infrastructure/docker/compose.yaml ps
+```text
+python infrastructure/scripts/local_platform.py start
+python infrastructure/scripts/local_platform.py health-check
+python infrastructure/scripts/local_platform.py smoke-test
 ```
 
-Para encerrar:
+Para encerrar mantendo os dados:
 
-```powershell
-docker compose -f infrastructure/docker/compose.yaml down
+```text
+python infrastructure/scripts/local_platform.py stop
 ```
 
-Use `down -v` somente se desejar remover explicitamente os volumes persistentes
-de desenvolvimento.
+O comando `docker compose down -v` remove todos os volumes persistentes; use-o
+somente se quiser descartar os dados locais.
 
-## Endpoints locais
+## Portas
 
-| Serviço | Endereço |
+| Serviço | Endereço local |
 |---|---|
 | PostgreSQL | `127.0.0.1:5432` |
 | Redis | `127.0.0.1:6379` |
@@ -35,13 +36,18 @@ de desenvolvimento.
 | Jaeger UI | `http://127.0.0.1:16686` |
 | OpenTelemetry OTLP/gRPC | `127.0.0.1:4317` |
 | OpenTelemetry OTLP/HTTP | `http://127.0.0.1:4318` |
+| OpenTelemetry health check | `http://127.0.0.1:13133/` |
 | Prometheus | `http://127.0.0.1:9090` |
 | Grafana | `http://127.0.0.1:3000` |
 | Mailpit SMTP | `127.0.0.1:1025` |
 | Mailpit UI | `http://127.0.0.1:8025` |
 
-As portas são publicadas somente no loopback. Redis e DynamoDB Local não
-fornecem autenticação nesta configuração, portanto mantenha-os locais e não
-exponha as portas à rede. Os dados são de desenvolvimento, sem garantias de
-durabilidade ou segurança de produção. A configuração de Collector/Prometheus
-é mínima e não representa instrumentação da aplicação.
+Todas as portas publicadas são vinculadas ao loopback. Os serviços também
+compartilham a rede bridge dedicada `local-platform`, isolada das redes de
+outros projetos Compose. Redis, DynamoDB Local e Mailpit não autenticam
+clientes nesta configuração. Os dados e credenciais destinam-se somente ao
+desenvolvimento local.
+
+Consulte [LOCAL_TROUBLESHOOTING.md](../../LOCAL_TROUBLESHOOTING.md) para
+diagnóstico e [SMOKE_TESTS.md](../../SMOKE_TESTS.md) para detalhes das
+verificações automatizadas.
