@@ -1,0 +1,63 @@
+name: Security
+
+on:
+  push:
+    branches: [developer, main]
+  pull_request:
+    branches: [developer, main]
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-audit:
+    name: Dependency vulnerability audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install project dependencies and audit tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" pip-audit
+      - name: Audit installed dependencies
+        run: pip-audit
+
+  source-analysis:
+    name: Python security lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install Bandit
+        run: python -m pip install bandit
+      - name: Scan application source
+        run: bandit --recursive src --severity-level medium --confidence-level medium
+
+  dependency-review:
+    name: Pull request dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
