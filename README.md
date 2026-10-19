@@ -25,29 +25,25 @@ Os ADRs ficam em [`docs/adr/`](docs/adr/); histórias existentes continuam em
 
 ## Desenvolvimento local
 
-Requisitos: Docker com Docker Compose e Python 3.13+. A pilha local inclui
-PostgreSQL, Redis, DynamoDB Local, Jaeger, Prometheus, Grafana, Mailpit e
-OpenTelemetry Collector; LocalStack não é utilizado.
+Consulte o guia de [desenvolvimento local](LOCAL_DEVELOPMENT.md) para
+pré-requisitos, configuração segura, portas, persistência e operação em
+Windows/Linux. A pilha inclui PostgreSQL, Redis, DynamoDB Local, Jaeger,
+Prometheus, Grafana, Mailpit e OpenTelemetry Collector; LocalStack não é
+utilizado. O [troubleshooting](LOCAL_TROUBLESHOOTING.md) e os
+[smoke tests](SMOKE_TESTS.md) documentam diagnóstico e validação.
 
-O Compose requer `POSTGRES_PASSWORD` e `GRAFANA_ADMIN_PASSWORD` no ambiente do
-processo. Forneça valores localmente, fora do repositório, antes de iniciar:
+O Compose exige `POSTGRES_PASSWORD` e `GRAFANA_ADMIN_PASSWORD` no ambiente do
+processo. Após configurá-las localmente, inicie e valide os serviços:
 
-```powershell
-$env:POSTGRES_PASSWORD = Read-Host "Senha local do PostgreSQL"
-$env:GRAFANA_ADMIN_PASSWORD = Read-Host "Senha local do Grafana"
-docker compose -f infrastructure/docker/compose.yaml up -d
+```text
+python infrastructure/scripts/local_platform.py start
+python infrastructure/scripts/local_platform.py smoke-test
 ```
 
-Os serviços publicados pelo Compose escutam somente em `127.0.0.1`. Consulte
-[`infrastructure/docker/README.md`](infrastructure/docker/README.md) para
-portas, configuração, encerramento e escopo da infraestrutura local.
-
-O scaffold FastAPI atual pode ser executado separadamente, conforme as
-instruções em [`4dev/README.md`](4dev/README.md).
+O guia detalhado do Compose está em
+[`infrastructure/docker/README.md`](infrastructure/docker/README.md).
 
 ## Como testar
-
-### Testes automatizados
 
 Na raiz do repositório, com as dependências de desenvolvimento instaladas:
 
@@ -62,67 +58,9 @@ contexts em `tests/architecture/`. Os testes existentes também exercitam o
 scaffold atual; essas verificações não validam funcionalidades ainda não
 implementadas.
 
-### Dependências locais com Docker Compose
-
-Requer Docker Desktop ou Docker Engine com Compose. Defina senhas locais no
-ambiente do processo — não as salve em arquivos versionados — e valide a
-configuração antes de iniciar:
-
-```powershell
-$env:POSTGRES_PASSWORD = Read-Host "Senha local do PostgreSQL"
-$env:GRAFANA_ADMIN_PASSWORD = Read-Host "Senha local do Grafana"
-
-docker compose -f infrastructure/docker/compose.yaml config --quiet
-docker compose -f infrastructure/docker/compose.yaml up -d
-docker compose -f infrastructure/docker/compose.yaml ps
-```
-
-Confira a disponibilidade do PostgreSQL e Redis:
-
-```powershell
-docker compose -f infrastructure/docker/compose.yaml exec -T postgres pg_isready -U authenticator -d authenticator
-docker compose -f infrastructure/docker/compose.yaml exec -T redis redis-cli ping
-```
-
-Confira os endpoints HTTP de Prometheus, Grafana e Mailpit:
-
-```powershell
-Invoke-RestMethod http://127.0.0.1:9090/-/healthy
-Invoke-RestMethod http://127.0.0.1:3000/api/health
-Invoke-RestMethod http://127.0.0.1:8025/api/v1/messages
-```
-
-Verifique o DynamoDB Local usando o `boto3` do projeto. O endpoint exige
-requisições assinadas; as credenciais abaixo são valores fictícios aceitos
-somente para este endpoint local e não são credenciais AWS:
-
-```powershell
-@'
-import boto3
-
-client = boto3.client(
-    "dynamodb",
-    endpoint_url="http://127.0.0.1:18000",
-    region_name="us-east-1",
-    aws_access_key_id="local",
-    aws_secret_access_key="local",
-)
-print(client.list_tables())
-'@ | python -
-```
-
-Jaeger UI: `http://127.0.0.1:16686`. Os demais endereços, portas e detalhes de
-configuração estão em [`infrastructure/docker/README.md`](infrastructure/docker/README.md).
-Todos os serviços publicados pelo Compose escutam somente em `127.0.0.1`.
-
-Para parar os containers e manter seus dados locais:
-
-```powershell
-docker compose -f infrastructure/docker/compose.yaml down
-```
-
-Use `down -v` somente quando quiser remover também os volumes persistentes de
-desenvolvimento.
+Para executar os smoke tests de infraestrutura local, consulte
+[SMOKE_TESTS.md](SMOKE_TESTS.md). Eles validam health checks, serviços e
+endpoints do Compose sem criar dados de negócio.
 
 ### Scaffold FastAPI
 
