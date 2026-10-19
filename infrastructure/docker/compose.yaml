@@ -1,0 +1,92 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: authenticator
+      POSTGRES_USER: authenticator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your local environment}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+    ports:
+      - "127.0.0.1:18000:8000"
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    ports:
+      - "127.0.0.1:16686:16686"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in your local environment}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.27.0
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.139.0
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+    volumes:
+      - ./observability/otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    depends_on:
+      - jaeger
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
