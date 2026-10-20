@@ -1,6 +1,4 @@
-"""Shared observability contracts, models and provider interfaces."""
-
-from __future__ import annotations
+"""Shared observability contracts, models, and provider interfaces."""
 
 from shared.observability.context.request_context import RequestContext
 from shared.observability.context.telemetry_context import TelemetryContext

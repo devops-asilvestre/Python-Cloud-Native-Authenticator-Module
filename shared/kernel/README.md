@@ -1,9 +1,15 @@
-# Shared Kernel
+# Kernel compartilhado
 
-Reservado a tipos técnicos pequenos e estáveis que não pertencem a um domínio,
-como convenções genéricas de identificadores ou metadados de correlação.
+Implementações Python em [`src/shared/kernel/`](../../src/shared/kernel/__init__.py)
+fornecem os tipos genéricos `Entity`, `ValueObject`, `AggregateRoot`,
+`DomainEvent`, `DomainException`, `Result`, `Clock` e `SystemClock`.
 
-Não adicionar entidades, value objects de domínio, regras de negócio,
-repositórios, clientes AWS ou dependências de qualquer bounded context. Prefira
-contratos publicados específicos a tipos de domínio compartilhados. Atualmente
-não há código de kernel implementado.
+`Entity` compara por tipo concreto e identificador. Cada subtipo de
+`ValueObject` declara sua propriedade `value`; essa propriedade deve representar
+todo o valor imutável. `AggregateRoot` acumula eventos genéricos e os entrega
+como tupla por `pull_domain_events()`. O relógio do sistema sempre retorna
+`datetime` com timezone UTC. `Result` exige a leitura da variante correta.
+
+Não adicione entidades ou value objects de negócio, regras de domínio,
+repositórios, clientes AWS, persistência ou dependências de bounded contexts.
+Eventos concretos continuam pertencendo ao domínio que os define.
