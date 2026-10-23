@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import boto3
+import boto3  # type: ignore[import-untyped]
 
 from shared.aws.exceptions.aws_configuration_exception import AwsConfigurationException
 from shared.aws.observability.aws_observability import AwsObservability
@@ -27,7 +27,10 @@ class AwsHealthCheck:
     def check(self, *, region_name: str | None = None) -> bool:
         effective_region = region_name or self._region_name or self._session.region_name
         try:
-            response = self._session.client("sts", region_name=effective_region).get_caller_identity()
+            response = self._session.client(
+                "sts",
+                region_name=effective_region,
+            ).get_caller_identity()
             success = bool(response.get("Account"))
             self.observability.log_health_check(success=success, region_name=effective_region)
             return success

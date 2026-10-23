@@ -1,16 +1,15 @@
-"""Common, non-sensitive metadata attached to integration events."""
+"""Event metadata and schema versioning."""
 
-from dataclasses import dataclass, field
-from datetime import UTC, datetime
-from uuid import UUID, uuid4
+from shared.events.metadata.event_context import EventContext
+from shared.events.metadata.event_correlation import EventCorrelation
+from shared.events.metadata.event_metadata import EventMetadata
+from shared.events.metadata.event_trace_context import EventTraceContext
+from shared.events.metadata.event_version import EventVersion
 
-
-@dataclass(frozen=True, slots=True)
-class EventMetadata:
-    """Event identity, UTC creation time, and optional correlation identifiers."""
-
-    event_id: UUID = field(default_factory=uuid4)
-    occurred_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    correlation_id: str | None = None
-    request_id: str | None = None
-    trace_id: str | None = None
+__all__ = [
+    "EventContext",
+    "EventCorrelation",
+    "EventMetadata",
+    "EventTraceContext",
+    "EventVersion",
+]

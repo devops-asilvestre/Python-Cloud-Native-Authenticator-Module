@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 
-import boto3
+import boto3  # type: ignore[import-untyped]
 
 from shared.aws.exceptions.aws_configuration_exception import AwsConfigurationException
 
@@ -12,7 +12,12 @@ from shared.aws.exceptions.aws_configuration_exception import AwsConfigurationEx
 class AwsRegionResolver:
     """Resolve the effective AWS region from settings, session, or environment."""
 
-    def __init__(self, session: boto3.session.Session | None = None, *, default_region: str = "us-east-1") -> None:
+    def __init__(
+        self,
+        session: boto3.session.Session | None = None,
+        *,
+        default_region: str = "us-east-1",
+    ) -> None:
         self._session = session or boto3.Session()
         self._default_region = default_region
 
@@ -27,4 +32,6 @@ class AwsRegionResolver:
         for candidate in candidates:
             if candidate and str(candidate).strip():
                 return str(candidate).strip()
-        raise AwsConfigurationException("No AWS region could be resolved from settings or environment.")
+        raise AwsConfigurationException(
+            "No AWS region could be resolved from settings or environment."
+        )

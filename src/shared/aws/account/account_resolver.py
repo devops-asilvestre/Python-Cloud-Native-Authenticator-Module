@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import boto3
+import boto3  # type: ignore[import-untyped]
 
 from shared.aws.authentication.identity_resolver import AwsIdentityResolver
 from shared.aws.exceptions.aws_configuration_exception import AwsConfigurationException

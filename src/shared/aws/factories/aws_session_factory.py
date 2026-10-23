@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-import boto3
-from botocore.exceptions import ClientError
+import boto3  # type: ignore[import-untyped]
+from botocore.exceptions import ClientError  # type: ignore[import-untyped]
 
 from shared.aws.exceptions.aws_authentication_exception import AwsAuthenticationException
 from shared.aws.exceptions.aws_configuration_exception import AwsConfigurationException
@@ -56,7 +56,9 @@ class AwsSessionFactory:
         if assume_role_arn or (self.settings.assume_role and self.settings.role_arn):
             role_arn = assume_role_arn or self.settings.role_arn
             if role_arn is None:
-                raise AwsConfigurationException("Assume role was requested but no role ARN was configured.")
+                raise AwsConfigurationException(
+                    "Assume role was requested but no role ARN was configured."
+                )
             try:
                 sts_client = session.client("sts", region_name=effective_region)
                 response = sts_client.assume_role(

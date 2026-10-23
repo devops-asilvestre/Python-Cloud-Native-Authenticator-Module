@@ -4,12 +4,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Generic, TypeVar
-
-T = TypeVar("T")
 
 
-class Repository(ABC, Generic[T]):
+class Repository[T](ABC):
     """Synchronous repository contract for shared persistence."""
 
     @abstractmethod
@@ -28,7 +25,7 @@ class Repository(ABC, Generic[T]):
     def delete(self, entity: T) -> None: ...
 
 
-class AsyncRepository(ABC, Generic[T]):
+class AsyncRepository[T](ABC):
     """Asynchronous repository contract shared across bounded contexts."""
 
     @abstractmethod
