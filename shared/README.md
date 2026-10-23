@@ -12,6 +12,7 @@ dependências entre modelos ou ciclos entre contextos.
 | [`contracts/`](contracts/README.md) | Envelopes de resposta, erros e paginação. |
 | [`observability/`](observability/README.md) | IDs de correlação e contratos de logs, traces e métricas. |
 | [`security/`](security/README.md) | Contratos de hashing/JWT e mascaramento de dados sensíveis. |
+| [`persistence/`](../src/shared/persistence/README.md) | Configuração, engine, sessão assíncrona, unit of work, isolamento de tenant e migrações Alembic para PostgreSQL. |
 | `testing/` | Fixture, factory e helpers reutilizáveis nos testes. |
 
 Não coloque aqui entidades, repositórios, regras de negócio, modelos de
