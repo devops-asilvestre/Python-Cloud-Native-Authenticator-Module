@@ -1,5 +1,3 @@
-import pytest
-
 from shared.aws import AwsAccountResolver, AwsClientFactory, AwsConnectionValidator, AwsContext
 from shared.aws.account.region_resolver import AwsRegionResolver
 from shared.aws.authentication.credential_resolver import AwsCredentialResolver
@@ -44,7 +42,10 @@ def test_aws_credential_resolver_reads_session_credentials() -> None:
 
 def test_aws_client_factory_uses_configured_session() -> None:
     session = FakeSession(region_name="us-east-1")
-    factory = AwsClientFactory(session_factory=AwsSessionFactory(), settings=AwsSettings(region="us-east-1"))
+    factory = AwsClientFactory(
+        session_factory=AwsSessionFactory(),
+        settings=AwsSettings(region="us-east-1"),
+    )
 
     client = factory.create_client("sts", session=session)
     assert client is not None

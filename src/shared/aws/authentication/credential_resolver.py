@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import boto3
+import boto3  # type: ignore[import-untyped]
 
 from shared.aws.exceptions.aws_authentication_exception import AwsAuthenticationException
 

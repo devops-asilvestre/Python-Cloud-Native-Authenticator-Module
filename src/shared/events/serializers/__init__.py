@@ -1,12 +1,18 @@
-"""Serializer interface; concrete formats belong to integration adapters."""
+"""Backward-compatible event serializer contract and JSON implementation."""
 
 from typing import Protocol
 
-from shared.events.contracts import EventContract
+from shared.events.contracts.event_contract import EventContract
+from shared.events.serialization.event_serializer import (
+    EventSerializer as EventEnvelopeSerializer,
+)
+from shared.events.serialization.event_serializer import (
+    JsonEventSerializer,
+)
 
 
 class EventSerializer(Protocol):
-    """Transport-neutral interface for encoding and decoding event contracts."""
+    """Original serializer interface retained for existing adapters."""
 
     def serialize(self, event: EventContract) -> bytes: ...
 
@@ -17,3 +23,10 @@ class EventSerializer(Protocol):
         event_type: str,
         version: int,
     ) -> EventContract: ...
+
+
+__all__ = [
+    "EventEnvelopeSerializer",
+    "EventSerializer",
+    "JsonEventSerializer",
+]

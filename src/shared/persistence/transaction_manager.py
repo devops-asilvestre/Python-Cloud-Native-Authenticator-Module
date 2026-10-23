@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Callable
-
 from contextlib import asynccontextmanager
 
 from shared.persistence.unit_of_work import UnitOfWork

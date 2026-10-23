@@ -22,7 +22,7 @@ def _generate_uuid7() -> uuid.UUID:
 class UUIDv7(str):
     """String representation of a UUIDv7 identifier."""
 
-    def __new__(cls, value: str | None = None) -> "UUIDv7":
+    def __new__(cls, value: str | None = None) -> Self:
         candidate = str(_generate_uuid7()) if value is None else str(value)
         parsed = uuid.UUID(candidate)
         if parsed.version != 7:

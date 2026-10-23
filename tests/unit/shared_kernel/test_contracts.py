@@ -22,7 +22,8 @@ def test_pagination_response_validates_and_calculates_total_pages() -> None:
 
 
 def test_event_metadata_uses_utc_and_version_is_validated() -> None:
-    assert EventMetadata().occurred_at.tzinfo == UTC
+    metadata = EventMetadata(tenant_id="tenant-1", source_service="test-service")
+    assert metadata.occurred_at.tzinfo == UTC
     assert EventVersion(major=1, minor=2) < EventVersion(major=2)
     with pytest.raises(ValueError, match="major version"):
         EventVersion(major=0)

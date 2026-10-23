@@ -1,16 +1,17 @@
-"""Transport-neutral event contract."""
+"""Transport-neutral event protocols."""
 
-from collections.abc import Mapping
-from typing import ClassVar, Protocol
+from shared.events.contracts.domain_event_contract import DomainEventContract
+from shared.events.contracts.event_contract import EventContract
+from shared.events.contracts.event_handler_contract import EventHandlerContract
+from shared.events.contracts.event_publisher_contract import EventPublisherContract
+from shared.events.contracts.event_subscriber_contract import EventSubscriberContract
+from shared.events.contracts.integration_event_contract import IntegrationEventContract
 
-from shared.events.metadata import EventMetadata
-from shared.events.versioning import EventVersion
-
-
-class EventContract(Protocol):
-    """Public shape for an event published between bounded contexts."""
-
-    event_type: ClassVar[str]
-    version: ClassVar[EventVersion]
-    metadata: EventMetadata
-    payload: Mapping[str, object]
+__all__ = [
+    "DomainEventContract",
+    "EventContract",
+    "EventHandlerContract",
+    "EventPublisherContract",
+    "EventSubscriberContract",
+    "IntegrationEventContract",
+]

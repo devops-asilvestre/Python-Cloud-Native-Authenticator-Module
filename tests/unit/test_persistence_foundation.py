@@ -1,7 +1,8 @@
 import asyncio
 from types import SimpleNamespace
+from typing import cast
 
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from shared.persistence import (
     AsyncSessionManager,
@@ -79,7 +80,8 @@ def test_session_factory_creates_async_session() -> None:
 
     assert session is not None
     assert session.bind is not None
-    assert str(session.bind.url).startswith("postgresql+asyncpg://")
+    assert session.bind is not None
+    assert str(session.bind.engine.url).startswith("postgresql+asyncpg://")
     assert session.info["tenant_id"] == "tenant-42"
 
 
@@ -96,12 +98,12 @@ def test_tenant_context_maps_to_session_metadata() -> None:
 def test_async_session_manager_manages_lifecycle() -> None:
     session = FakeAsyncSession()
     factory = SimpleNamespace(create=lambda: session)
-    manager = AsyncSessionManager(factory)
+    manager = AsyncSessionManager(cast(SessionFactory, factory))
 
     async def run() -> None:
         async with manager as active_session:
-            assert active_session is session
-            assert manager.session is session
+            assert active_session is cast(AsyncSession, session)
+            assert manager.session is cast(AsyncSession, session)
         assert session.close_calls == 1
 
     asyncio.run(run())
@@ -109,17 +111,15 @@ def test_async_session_manager_manages_lifecycle() -> None:
 
 def test_sqlalchemy_unit_of_work_commits_and_rolls_back() -> None:
     session = FakeAsyncSession()
-    factory = SimpleNamespace(create=lambda: session)
-
     async def successful_work() -> None:
-        async with SqlAlchemyUnitOfWork(factory) as unit_of_work:
-            assert unit_of_work.session is session
+        async with SqlAlchemyUnitOfWork(lambda: cast(AsyncSession, session)) as unit_of_work:
+            assert unit_of_work.session is cast(AsyncSession, session)
         assert session.commit_calls == 1
         assert session.rollback_calls == 0
 
     async def failing_work() -> None:
         try:
-            async with SqlAlchemyUnitOfWork(factory):
+            async with SqlAlchemyUnitOfWork(lambda: cast(AsyncSession, session)):
                 raise ValueError("boom")
         except ValueError:
             pass
@@ -132,12 +132,12 @@ def test_sqlalchemy_unit_of_work_commits_and_rolls_back() -> None:
 
 def test_transaction_manager_wraps_unit_of_work() -> None:
     session = FakeAsyncSession()
-    factory = SimpleNamespace(create=lambda: session)
+    factory = cast(SessionFactory, SimpleNamespace(create=lambda: session))
 
     async def run() -> None:
         async with TransactionManager(lambda: SqlAlchemyUnitOfWork(factory)) as work:
             assert isinstance(work, SqlAlchemyUnitOfWork)
-            assert work.session is session
+            assert work.session is cast(AsyncSession, session)
         assert session.commit_calls == 1
 
     asyncio.run(run())

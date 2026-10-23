@@ -20,7 +20,7 @@ class UnitOfWork(ABC):
     def session(self) -> AsyncSession: ...
 
     @abstractmethod
-    async def __aenter__(self) -> "UnitOfWork": ...
+    async def __aenter__(self) -> UnitOfWork: ...
 
     @abstractmethod
     async def __aexit__(
@@ -53,10 +53,14 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
             raise PersistenceException("No active SQLAlchemy session available.")
         return self._session
 
-    async def __aenter__(self) -> "SqlAlchemyUnitOfWork":
+    async def __aenter__(self) -> SqlAlchemyUnitOfWork:
         if callable(self._session_factory):
             session_factory = self._session_factory
-            self._session = session_factory() if not isinstance(session_factory, SessionFactory) else session_factory.create()
+            self._session = (
+                session_factory()
+                if not isinstance(session_factory, SessionFactory)
+                else session_factory.create()
+            )
         else:
             self._session = self._session_factory.create()
         return self
