@@ -18,6 +18,12 @@ _SENSITIVE_KEYS = {
     "credential",
     "private_key",
     "client_secret",
+    "plaintext",
+    "ciphertext",
+    "signature",
+    "data_key",
+    "datakey",
+    "key_material",
 }
 
 

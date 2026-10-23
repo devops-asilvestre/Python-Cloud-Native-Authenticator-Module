@@ -88,22 +88,4 @@ class StructuredLogger(LoggerContract):
 
     @staticmethod
     def _sanitize_fields(fields: dict[str, Any]) -> dict[str, Any]:
-        sanitized: dict[str, Any] = {}
-        for key, value in fields.items():
-            normalized = str(key).lower()
-            sensitive_tokens = {
-                "password",
-                "secret",
-                "token",
-                "authorization",
-                "api_key",
-                "cookie",
-                "credential",
-            }
-            if any(token in normalized for token in sensitive_tokens):
-                sanitized[key] = "[REDACTED]"
-            elif isinstance(value, dict):
-                sanitized[key] = StructuredLogEntry._redact_attributes(value)
-            else:
-                sanitized[key] = value
-        return sanitized
+        return StructuredLogEntry._redact_attributes(fields)
