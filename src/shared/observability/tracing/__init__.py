@@ -1,18 +1,11 @@
-"""Tracing interface suitable for OpenTelemetry-backed adapters."""
+"""Trace and span contracts and propagation context."""
 
-from contextlib import AbstractContextManager
-from typing import Protocol
+from shared.observability.tracing.span_contract import SpanContract
+from shared.observability.tracing.trace_context import TraceContext
+from shared.observability.tracing.trace_contract import TraceContract
 
-
-class Span(Protocol):
-    """Minimal span contract with explicit attribute and error recording."""
-
-    def set_attribute(self, key: str, value: str | int | float | bool) -> None: ...
-
-    def record_exception(self, exception: Exception) -> None: ...
-
-
-class Tracer(Protocol):
-    """Creates scoped spans without binding the shared kernel to a provider."""
-
-    def start_span(self, name: str) -> AbstractContextManager[Span]: ...
+__all__ = [
+    "SpanContract",
+    "TraceContext",
+    "TraceContract",
+]

@@ -1,17 +1,11 @@
-"""Correlation identifiers for request and trace propagation."""
+"""UUIDv7 identifiers used for request and trace correlation."""
 
-from dataclasses import dataclass
-from typing import NewType
+from shared.observability.correlation.correlation_id import CorrelationId
+from shared.observability.correlation.request_id import RequestId
+from shared.observability.correlation.trace_id import TraceId
 
-CorrelationId = NewType("CorrelationId", str)
-RequestId = NewType("RequestId", str)
-TraceId = NewType("TraceId", str)
-
-
-@dataclass(frozen=True, slots=True)
-class CorrelationContext:
-    """Optional identifiers carried across process and service boundaries."""
-
-    correlation_id: CorrelationId | None = None
-    request_id: RequestId | None = None
-    trace_id: TraceId | None = None
+__all__ = [
+    "CorrelationId",
+    "RequestId",
+    "TraceId",
+]

@@ -1,16 +1,11 @@
-"""Structured logger interface without a logging backend dependency."""
+"""Structured logging contracts, models, and implementation."""
 
-from collections.abc import Mapping
-from typing import Protocol
+from shared.observability.logging.logger_contract import LoggerContract
+from shared.observability.logging.structured_log_entry import StructuredLogEntry
+from shared.observability.logging.structured_logger import StructuredLogger
 
-
-class StructuredLogger(Protocol):
-    """Minimal structured logging contract for adapters."""
-
-    def debug(self, message: str, *, attributes: Mapping[str, object] | None = None) -> None: ...
-
-    def info(self, message: str, *, attributes: Mapping[str, object] | None = None) -> None: ...
-
-    def warning(self, message: str, *, attributes: Mapping[str, object] | None = None) -> None: ...
-
-    def error(self, message: str, *, attributes: Mapping[str, object] | None = None) -> None: ...
+__all__ = [
+    "LoggerContract",
+    "StructuredLogEntry",
+    "StructuredLogger",
+]

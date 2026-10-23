@@ -1,16 +1,13 @@
-"""Metrics interface suitable for OpenTelemetry-backed adapters."""
+"""Metric contracts for counters, gauges, and histograms."""
 
-from collections.abc import Mapping
-from typing import Protocol
+from shared.observability.metrics.counter_contract import CounterContract
+from shared.observability.metrics.gauge_contract import GaugeContract
+from shared.observability.metrics.histogram_contract import HistogramContract
+from shared.observability.metrics.metric_contract import MetricContract
 
-
-class Counter(Protocol):
-    """Monotonically increasing measurement."""
-
-    def add(self, value: int, *, attributes: Mapping[str, str] | None = None) -> None: ...
-
-
-class Histogram(Protocol):
-    """Distribution measurement."""
-
-    def record(self, value: float, *, attributes: Mapping[str, str] | None = None) -> None: ...
+__all__ = [
+    "CounterContract",
+    "GaugeContract",
+    "HistogramContract",
+    "MetricContract",
+]
