@@ -2,6 +2,7 @@
 
 from shared.observability.context.request_context import RequestContext
 from shared.observability.context.telemetry_context import TelemetryContext
+from shared.observability.correlation.correlation_context import CorrelationContext
 from shared.observability.correlation.correlation_id import CorrelationId
 from shared.observability.correlation.request_id import RequestId
 from shared.observability.correlation.trace_id import TraceId
@@ -22,6 +23,7 @@ from shared.observability.tracing.trace_contract import TraceContract
 
 __all__ = [
     "CorrelationId",
+    "CorrelationContext",
     "CounterContract",
     "GaugeContract",
     "HistogramContract",
