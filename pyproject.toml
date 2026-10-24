@@ -20,6 +20,7 @@ dependencies = [
     "pydantic-settings>=2.7,<3",
     "redis>=5,<7",
     "sqlalchemy[asyncio]>=2.0,<3",
+    "structlog>=24.4,<26",
     "uvicorn[standard]>=0.34,<1",
 ]
 
@@ -53,5 +54,6 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.13"
 mypy_path = "src"
+files = ["src", "tests"]
 strict = true
 warn_unused_configs = true
