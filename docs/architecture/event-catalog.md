@@ -33,11 +33,16 @@ rejeitar ou encaminhar eventos inválidos para tratamento operacional visível.
 Ordenação global não é garantida; quando necessária, definir chave de
 particionamento e semântica por agregado.
 
-## Eventos propostos
+## Eventos implementados e propostos
 
 | Tipo (versão inicial) | Produtor / fato ocorrido | Consumidores previstos | Dados específicos mínimos |
 |---|---|---|---|
-| `tenant.tenant.created` | Tenant & Organization: tenant criado. | Audit & Privacy; provisioning/configuração. | `tenant_id`, plano/configuração inicial não sensível. |
+| `tenant.tenant.created` (1.0.0) | Tenant & Organization: tenant criado. | Audit & Privacy; provisioning/configuração. | `tenant_id`, código, slug e estado inicial. |
+| `tenant.tenant.updated` (1.0.0) | Tenant & Organization: dados configuráveis alterados. | Audit & Privacy; provisioning/configuração. | `tenant_id`, código, slug e estado atual. |
+| `tenant.tenant.activated` (1.0.0) | Tenant & Organization: tenant ativado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, estado atual. |
+| `tenant.tenant.suspended` (1.0.0) | Tenant & Organization: tenant suspenso. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, estado atual. |
+| `tenant.tenant.deactivated` (1.0.0) | Tenant & Organization: tenant desativado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, estado atual. |
+| `tenant.tenant.deleted` (1.0.0) | Tenant & Organization: tenant encerrado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, estado atual. |
 | `tenant.tenant.status-changed` | Tenant & Organization: tenant suspenso, reativado ou encerrado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, `previous_status`, `new_status`, `reason_code` controlado. |
 | `identity.user.registered` | Identity Directory: identidade registrada. | Authentication, Audit; notificações se política permitir. | `identity_id`, `tenant_id`, origem do cadastro. Sem email ou perfil completo por padrão. |
 | `identity.user.attributes-changed` | Identity Directory: atributos autorizados foram alterados. | Authorization, Audit. | `identity_id`, `tenant_id`, nomes dos atributos alterados sem valores, versão do agregado. |
