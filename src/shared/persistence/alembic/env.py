@@ -10,6 +10,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from authentication_service.infrastructure.persistence.models import AuthenticationBase
 from shared.persistence.database_settings import DatabaseSettings
 from tenant_service.infrastructure.persistence.models import TenantBase
 
@@ -24,6 +25,8 @@ config.set_main_option("sqlalchemy.url", settings.database_url)
 # This migration scaffold intentionally keeps the shared layer technology-neutral.
 # Concrete bounded contexts can attach their metadata if and when they have models.
 target_metadata = TenantBase.metadata
+for table in AuthenticationBase.metadata.tables.values():
+    table.to_metadata(target_metadata)
 
 
 def run_migrations_offline() -> None:
