@@ -44,7 +44,12 @@ particionamento e semântica por agregado.
 | `tenant.tenant.deactivated` (1.0.0) | Tenant & Organization: tenant desativado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, estado atual. |
 | `tenant.tenant.deleted` (1.0.0) | Tenant & Organization: tenant encerrado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, estado atual. |
 | `tenant.tenant.status-changed` | Tenant & Organization: tenant suspenso, reativado ou encerrado. | Directory, Authentication, Authorization, Protocols, Audit. | `tenant_id`, `previous_status`, `new_status`, `reason_code` controlado. |
-| `identity.user.registered` | Identity Directory: identidade registrada. | Authentication, Audit; notificações se política permitir. | `identity_id`, `tenant_id`, origem do cadastro. Sem email ou perfil completo por padrão. |
+| `identity.user.created` (1.0.0) | Identity Directory: identidade registrada. | Authentication, Audit; notificações se política permitir. | `user_id`, `tenant_id`, `correlation_id`; sem email ou perfil completo. |
+| `identity.user.updated` (1.0.0) | Identity Directory: atributos autorizados foram alterados. | Authorization, Audit. | `user_id`, `tenant_id`, nomes dos atributos alterados sem valores. |
+| `identity.user.activated` (1.0.0) | Identity Directory: identidade ativada. | Authentication, Authorization, Audit. | `user_id`, `tenant_id`, estado atual. |
+| `identity.user.suspended` (1.0.0) | Identity Directory: identidade suspensa. | Authentication, Authorization, Audit. | `user_id`, `tenant_id`, estado atual. |
+| `identity.user.deactivated` (1.0.0) | Identity Directory: identidade desativada. | Authentication, Authorization, Audit. | `user_id`, `tenant_id`, estado atual. |
+| `identity.user.deleted` (1.0.0) | Identity Directory: identidade excluída logicamente. | Authentication, Authorization, Audit. | `user_id`, `tenant_id`, estado `DELETED`. |
 | `identity.user.attributes-changed` | Identity Directory: atributos autorizados foram alterados. | Authorization, Audit. | `identity_id`, `tenant_id`, nomes dos atributos alterados sem valores, versão do agregado. |
 | `identity.user.status-changed` | Identity Directory: estado da identidade mudou. | Authentication, Authorization, Protocols, Audit. | `identity_id`, `tenant_id`, estado anterior/novo, `reason_code`. |
 | `authentication.session.succeeded` | Authentication & Assurance: autenticação concluída. | Audit & Privacy; detecção de risco. | `identity_id`, `tenant_id`, método/fator categorizado, `assurance_level`, `correlation_id`. |

@@ -400,6 +400,7 @@ def test_aws_sqs_provider_rejects_bad_pagination_and_missing_queue() -> None:
     with pytest.raises(SqsException, match="pagination token"):
         provider.list_queues(name_prefix="auth")
 
+
     client = FakeSqsClient()
 
     def no_queues(**kwargs: Any) -> dict[str, Any]:
@@ -418,6 +419,41 @@ def test_aws_sqs_provider_rejects_bad_pagination_and_missing_queue() -> None:
     provider = AwsSqsProvider(make_settings(), FakeAwsClientFactory(client))
     with pytest.raises(SqsException, match="pagination token"):
         provider.list_queues(name_prefix="auth")
+
+
+def test_aws_sqs_provider_covers_direct_attribute_and_delete_failures() -> None:
+    client = FakeSqsClient()
+    provider = AwsSqsProvider(make_settings(), FakeAwsClientFactory(client))
+    queue = make_queue()
+
+    def fail_attributes(**kwargs: Any) -> dict[str, Any]:
+        raise ClientError({"Error": {"Code": "AccessDenied"}}, "GetQueueAttributes")
+
+    client.get_queue_attributes = fail_attributes  # type: ignore[method-assign]
+    with pytest.raises(SqsException, match="get_queue_attributes"):
+        provider.get_queue_attributes(queue)
+
+    client = FakeSqsClient()
+    provider = AwsSqsProvider(make_settings(), FakeAwsClientFactory(client))
+
+    def invalid_attributes(**kwargs: Any) -> dict[str, Any]:
+        return {"Attributes": []}
+
+    client.get_queue_attributes = invalid_attributes  # type: ignore[method-assign]
+    with pytest.raises(SqsException, match="invalid queue attributes"):
+        provider.get_queue_attributes_for_url(
+            "https://sqs.us-east-1.amazonaws.com/123456789012/auth-test-identity-events"
+        )
+
+    client = FakeSqsClient()
+    provider = AwsSqsProvider(make_settings(), FakeAwsClientFactory(client))
+
+    def fail_delete(**kwargs: Any) -> dict[str, Any]:
+        raise ClientError({"Error": {"Code": "AccessDenied"}}, "DeleteMessage")
+
+    client.delete_message = fail_delete  # type: ignore[method-assign]
+    with pytest.raises(SqsException, match="delete_message"):
+        provider.delete_message(queue, receipt_handle="receipt")
 
 
 def test_aws_sqs_provider_reads_trace_and_retry_attributes() -> None:
