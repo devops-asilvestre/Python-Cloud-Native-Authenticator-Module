@@ -57,7 +57,11 @@ async def get_authentication_service(
             raise RuntimeError(
                 "EventBridge configuration is required: account ID and bus name."
             )
-        settings = EventBridgeSettings(account_id=account_id, bus_name=bus_name)
+        settings = EventBridgeSettings(
+            account_id=account_id,
+            bus_name=bus_name,
+            endpoint_url=os.getenv("AUTHENTICATOR_EVENTBRIDGE_ENDPOINT_URL"),
+        )
         publisher = EventBridgeAuthenticationPublisher(
             EventBridgePublisher(settings),
             lambda tenant: EventContext(tenant_id=tenant),
