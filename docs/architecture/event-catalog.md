@@ -82,6 +82,8 @@ controles de segurança nem ser apresentada como trilha completa de auditoria.
 
 Os produtores e consumidores são detalhados em
 [`domain-and-context-map.md`](domain-and-context-map.md#context-map). O
-EventBridge/SQS são opções de transporte planejadas, não parte do contrato de
-domínio. O armazenamento de auditoria, garantias de entrega e política de
-retenção ainda são decisões em aberto.
+EventBridge/SQS são adaptadores de transporte das foundations compartilhadas,
+não dependências dos contratos de domínio. A US022 implementa o adaptador
+EventBridge, incluindo publicação, roteamento, filtros, fanout, auditoria
+sanitizada e health check. O armazenamento durável de auditoria, garantias de
+entrega, outbox transacional e replay efetivo continuam decisões em aberto.
