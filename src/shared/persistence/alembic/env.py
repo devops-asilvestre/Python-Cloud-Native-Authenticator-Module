@@ -8,8 +8,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import create_async_engine
 
+from authentication_service.infrastructure.persistence.models import AuthenticationBase
 from shared.persistence.database_settings import DatabaseSettings
 from tenant_service.infrastructure.persistence.models import TenantBase
 
@@ -19,11 +20,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 settings = DatabaseSettings()
-config.set_main_option("sqlalchemy.url", settings.database_url)
 
 # This migration scaffold intentionally keeps the shared layer technology-neutral.
 # Concrete bounded contexts can attach their metadata if and when they have models.
 target_metadata = TenantBase.metadata
+for table in AuthenticationBase.metadata.tables.values():
+    table.to_metadata(target_metadata)
 
 
 def run_migrations_offline() -> None:
@@ -40,9 +42,8 @@ def run_migrations_offline() -> None:
 
 
 async def run_migrations_online() -> None:
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
+    connectable = create_async_engine(
+        settings.database_url,
         poolclass=pool.NullPool,
     )
 
