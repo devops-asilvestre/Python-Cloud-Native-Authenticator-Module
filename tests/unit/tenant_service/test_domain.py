@@ -55,6 +55,16 @@ def test_invalid_transition_is_rejected() -> None:
         tenant.suspend()
 
 
+def test_delete_is_idempotent_and_status_values_are_validated() -> None:
+    tenant = make_tenant()
+    tenant.delete()
+    tenant.delete()
+    with pytest.raises(ValueError):
+        from tenant_service.domain.value_objects import TenantStatus
+
+        TenantStatus("UNKNOWN")  # type: ignore[arg-type]
+
+
 def test_tenant_id_requires_uuidv7() -> None:
     with pytest.raises(ValueError):
         TenantId("00000000-0000-4000-8000-000000000000")
