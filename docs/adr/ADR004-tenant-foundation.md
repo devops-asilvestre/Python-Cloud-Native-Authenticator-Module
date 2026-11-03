@@ -3,6 +3,9 @@
 - Status: Accepted
 - Context: US023 - Tenant Foundation
 - Date: 2026-11-03
+- Validation: concluída em 2026-11-03; cobertura do contexto Tenant 97%,
+  repositório SQLAlchemy 100%, Ruff aprovado, Mypy strict aprovado, Pytest
+  aprovado e `git diff --check` aprovado.
 
 ## Decision
 

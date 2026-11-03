@@ -6,6 +6,7 @@ Documentação versionada da plataforma, em Markdown.
   integração e arquitetura estratégica.
 - [`adr/`](adr/ADR000-template.md): decisões arquiteturais e template.
 - [`user-stories/`](user-stories/README.md): índice de histórias de usuário.
+- [`reports/`](reports/US023-execution-report.md): relatórios finais de execução.
 - [`security/`](security/README.md): baseline e decisões de segurança.
 - [`operations/`](operations/README.md): área reservada a operação e resposta.
 - [`devops/`](devops/devops-strategy.md): estratégia de desenvolvimento e entrega.
