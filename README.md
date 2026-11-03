@@ -62,6 +62,14 @@ Para executar os smoke tests de infraestrutura local, consulte
 [SMOKE_TESTS.md](SMOKE_TESTS.md). Eles validam health checks, serviços e
 endpoints do Compose sem criar dados de negócio.
 
+### Tenant API (US023)
+
+O primeiro bounded context executável é o Tenant. A API REST está disponível
+no mesmo app FastAPI e documentada em `/docs` no ambiente local. A migration
+`20261103_001_create_tenants` cria a tabela e as constraints de unicidade de
+código e slug. O desenho e as decisões estão em
+[`docs/adr/ADR004-tenant-foundation.md`](docs/adr/ADR004-tenant-foundation.md).
+
 ### Scaffold FastAPI
 
 O scaffold pode ser iniciado separadamente seguindo as instruções em
