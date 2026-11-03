@@ -1,8 +1,9 @@
 # Ambiente local Docker
 
 [`compose.yaml`](compose.yaml) inicia somente dependências locais:
-PostgreSQL, Redis, DynamoDB Local, Jaeger, Prometheus, Grafana, Mailpit e
-OpenTelemetry Collector. LocalStack não é utilizado. A aplicação não é
+PostgreSQL, Redis, DynamoDB Local, LocalStack, Jaeger, Prometheus, Grafana, Mailpit e
+OpenTelemetry Collector. O LocalStack provisiona EventBridge, SQS e o serviço
+habilitado do Secrets Manager para preparação futura. A aplicação não é
 construída nem iniciada por este Compose.
 
 ## Operação
@@ -33,6 +34,7 @@ somente se quiser descartar os dados locais.
 | PostgreSQL | `127.0.0.1:5432` |
 | Redis | `127.0.0.1:6379` |
 | DynamoDB Local | `http://127.0.0.1:18000` |
+| LocalStack (EventBridge/SQS/Secrets Manager) | `http://127.0.0.1:4566` |
 | Jaeger UI | `http://127.0.0.1:16686` |
 | OpenTelemetry OTLP/gRPC | `127.0.0.1:4317` |
 | OpenTelemetry OTLP/HTTP | `http://127.0.0.1:4318` |

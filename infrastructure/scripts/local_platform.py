@@ -15,6 +15,7 @@ SERVICES = (
     "postgres",
     "redis",
     "dynamodb-local",
+    "localstack",
     "jaeger",
     "prometheus",
     "grafana",
@@ -22,6 +23,7 @@ SERVICES = (
     "otel-collector",
 )
 HTTP_CHECKS = (
+    ("LocalStack", "http://127.0.0.1:4566/_localstack/health"),
     ("Jaeger", "http://127.0.0.1:16686/"),
     ("OpenTelemetry Collector", "http://127.0.0.1:13133/"),
     ("Prometheus", "http://127.0.0.1:9090/-/healthy"),

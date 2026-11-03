@@ -48,6 +48,37 @@ services:
     networks: [local-platform]
     restart: unless-stopped
 
+  localstack:
+    image: localstack/localstack:4.8.1
+    environment:
+      SERVICES: events,sqs,secretsmanager
+      AWS_DEFAULT_REGION: ${AUTHENTICATOR_EVENTBRIDGE_AWS_REGION:-us-east-1}
+      AUTHENTICATOR_EVENTBRIDGE_ACCOUNT_ID: ${AUTHENTICATOR_EVENTBRIDGE_ACCOUNT_ID:-000000000000}
+      AUTHENTICATOR_EVENTBRIDGE_BUS_NAME: ${AUTHENTICATOR_EVENTBRIDGE_BUS_NAME:-authenticator-bus}
+      AUTHENTICATOR_EVENTBRIDGE_QUEUE_NAME: ${AUTHENTICATOR_EVENTBRIDGE_QUEUE_NAME:-authentication-events}
+      AUTHENTICATOR_EVENTBRIDGE_RULE_NAME: ${AUTHENTICATOR_EVENTBRIDGE_RULE_NAME:-authentication-events-to-sqs}
+      DEBUG: "0"
+      LS_LOG: WARN
+      PERSISTENCE: "1"
+    ports:
+      - "127.0.0.1:4566:4566"
+    volumes:
+      - localstack-data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack/init:/etc/localstack/init/ready.d:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail --silent http://127.0.0.1:4566/_localstack/health | grep -Eq '\"events\": \"(available|running)\"'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    networks: [local-platform]
+    restart: unless-stopped
+
   jaeger:
     image: jaegertracing/all-in-one:1.76.0
     environment:
@@ -161,3 +192,4 @@ volumes:
   prometheus-data:
   grafana-data:
   mailpit-data:
+  localstack-data:

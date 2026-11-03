@@ -50,6 +50,7 @@ def _event_publisher() -> EventPublisher | UnavailableEventPublisher:
                 EventBridgeSettings(
                     account_id=os.getenv("AUTHENTICATOR_EVENTBRIDGE_ACCOUNT_ID", ""),
                     bus_name=os.getenv("AUTHENTICATOR_EVENTBRIDGE_BUS_NAME", ""),
+                    endpoint_url=os.getenv("AUTHENTICATOR_EVENTBRIDGE_ENDPOINT_URL"),
                 )
             )
         )
