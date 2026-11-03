@@ -38,6 +38,16 @@ class FakeEventBridgeClient:
         return {"FailedEntryCount": 0, "Entries": [{"EventId": "eventbridge-1"}]}
 
 
+class FailingProvider:
+    def __init__(self, response: dict[str, object] | None = None) -> None:
+        self.response = response
+
+    def put_events(self, _: list[dict[str, object]]) -> dict[str, object]:
+        if self.response is None:
+            raise RuntimeError("offline")
+        return self.response
+
+
 def make_provider(settings: EventBridgeSettings) -> EventBridgeProvider:
     return EventBridgeProvider(settings, client=FakeEventBridgeClient())
 
@@ -119,12 +129,16 @@ def test_event_bus_resolver_and_router() -> None:
     assert decision.category == "identity"
     assert decision.routing_mode == "multicast"
     assert "audit" in decision.consumers
-    assert EventBusResolver(settings).resolve(
-        "tenant-1", "authentication", "authentication.session.started"
-    ).bus_name == "authentication-bus"
-    assert EventBusResolver(settings).resolve(
-        "tenant-1", "tenant", "tenant.tenant.created"
-    ).bus_name == "tenant-bus"
+    assert (
+        EventBusResolver(settings)
+        .resolve("tenant-1", "authentication", "authentication.session.started")
+        .bus_name
+        == "authentication-bus"
+    )
+    assert (
+        EventBusResolver(settings).resolve("tenant-1", "tenant", "tenant.tenant.created").bus_name
+        == "tenant-bus"
+    )
     with pytest.raises(ValueError):
         EventBusResolver(settings).resolve("", "identity", "identity.user.created")
     assert EventRouter().identify_consumers("other.event.type") == ("audit",)
@@ -195,6 +209,26 @@ def test_schema_enforcer_and_publisher_require_mandatory_fields() -> None:
         publisher.publish_raw(payload={}, event=None)
 
 
+def test_eventbridge_publisher_surfaces_provider_failures() -> None:
+    event = make_fake_user_created_event()
+    settings = EventBridgeSettings(
+        aws_region="us-east-1",
+        account_id="123456789012",
+        bus_name="shared-event-bus",
+    )
+    for response in (
+        {"FailedEntryCount": 1},
+        {"FailedEntryCount": 0, "Entries": []},
+        {"FailedEntryCount": 0, "Entries": [{}]},
+    ):
+        publisher = EventBridgePublisher(settings, provider=FailingProvider(response))  # type: ignore[arg-type]
+        with pytest.raises(EventBridgePublishException):
+            publisher.publish(event)
+    publisher = EventBridgePublisher(settings, provider=FailingProvider())  # type: ignore[arg-type]
+    with pytest.raises(EventBridgePublishException):
+        publisher.publish(event)
+
+
 def test_fanout_and_retry_and_audit() -> None:
     event = make_fake_user_created_event()
     fanout = FanoutEngine()
@@ -228,9 +262,12 @@ def test_fanout_and_retry_and_audit() -> None:
     assert EventObservability().to_dict()["publish_success"] is True
     with pytest.raises(ValueError):
         RetryPolicy(jitter_ratio=2)
-    assert RetryPolicy(max_attempts=1).evaluate(
-        RuntimeError("permanent"), RetryMetadata(attempt=1)
-    ).should_dead_letter is True
+    assert (
+        RetryPolicy(max_attempts=1)
+        .evaluate(RuntimeError("permanent"), RetryMetadata(attempt=1))
+        .should_dead_letter
+        is True
+    )
 
 
 def test_provider_schema_and_publisher_failures() -> None:

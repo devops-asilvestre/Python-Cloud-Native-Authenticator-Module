@@ -1,0 +1,9 @@
+from enum import StrEnum
+
+
+class UserType(StrEnum):
+    EMPLOYEE = "EMPLOYEE"
+    CONTRACTOR = "CONTRACTOR"
+    PARTNER = "PARTNER"
+    CUSTOMER = "CUSTOMER"
+    SERVICE_ACCOUNT = "SERVICE_ACCOUNT"

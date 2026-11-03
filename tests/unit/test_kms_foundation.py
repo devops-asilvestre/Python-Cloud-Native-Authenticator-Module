@@ -552,6 +552,33 @@ def test_resolver_rejects_incomplete_and_cross_account_key_metadata(
         account_checked_resolver.resolve(None, KeyPurpose.ENCRYPTION)
 
 
+def test_resolver_rejects_invalid_key_usage_state_arn_and_provider_errors(
+    kms: tuple[FakeKmsProvider, KmsKeyResolver],
+) -> None:
+    provider, resolver = kms
+    metadata = {
+        "KeyId": "key-123",
+        "Arn": "arn:aws:kms:us-east-1:123456789012:key/key-123",
+        "KeyUsage": "ENCRYPT_DECRYPT",
+        "KeyState": "Enabled",
+    }
+
+    for field, value in (
+        ("KeyUsage", "SIGN_VERIFY"),
+        ("KeyState", "Disabled"),
+        ("Arn", "not-an-arn"),
+        ("Arn", "arn:aws:kms:eu-west-1:123456789012:key/key-123"),
+    ):
+        provider.describe_response = {"KeyMetadata": {**metadata, field: value}}
+        with pytest.raises(KmsValidationException):
+            resolver.resolve(None, KeyPurpose.ENCRYPTION)
+
+    provider.describe_response = None
+    provider.raise_aws_error = True
+    with pytest.raises(KmsConfigurationException):
+        resolver.resolve(None, KeyPurpose.ENCRYPTION)
+
+
 def test_resolver_facade_and_health_validators(
     kms: tuple[FakeKmsProvider, KmsKeyResolver],
 ) -> None:
