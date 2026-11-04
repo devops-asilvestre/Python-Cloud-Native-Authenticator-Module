@@ -1,4 +1,4 @@
-# US025A - Validação do SQS
+# CERT-US025-001 - SQS validation
 
 ## Recurso esperado
 
@@ -26,6 +26,19 @@ contendo os eventos:
 - `authentication.authentication.failed`
 - `authentication.session.created`
 - `authentication.session.terminated`
+
+## Resultado observado
+
+**PASS** - a fila recebeu quatro mensagens após o fluxo:
+
+- `authentication.authentication.failed`;
+- `authentication.session.created`;
+- `authentication.authentication.succeeded`;
+- `authentication.session.terminated`.
+
+As mensagens continham o tenant certificado e envelopes de eventos de
+autenticação. Os `MessageId` foram coletados durante a inspeção; as mensagens
+permaneceram disponíveis para inspeção local e não foram apagadas.
 
 O comando de recebimento é somente de inspeção nesta evidência; não apagar a
 mensagem até registrar o payload e o `MessageId`. Os payloads devem ser

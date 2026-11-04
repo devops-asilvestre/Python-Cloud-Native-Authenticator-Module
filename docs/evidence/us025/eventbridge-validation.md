@@ -1,13 +1,15 @@
-# US025A - Validação do EventBridge
+# CERT-US025-001 - EventBridge validation
 
 ## Recursos esperados
 
 | Recurso | Valor |
 |---|---|
-| Event bus | `authenticator-bus` |
+| Configured bus | `authenticator-bus` |
+| Authentication bus used by publisher | `authentication-bus` |
 | Rule | `authentication-events-to-sqs` |
 | Padrões roteados | `authentication.authentication.succeeded`, `authentication.authentication.failed`, `authentication.session.created`, `authentication.session.terminated` |
 | Endpoint | `http://127.0.0.1:4566` |
+| Local account | `000000000000` |
 
 ## Inspeção
 
@@ -22,10 +24,18 @@ aws --endpoint-url http://127.0.0.1:4566 events list-targets-by-rule `
   --rule authentication-events-to-sqs
 ```
 
-As chamadas devem retornar o bus, a rule habilitada e um target SQS. A
+As chamadas devem retornar o bus, a rule habilitada e um target SQS. Durante
+esta certificação, o publisher resolveu `authentication-bus`; esse barramento
+e a mesma regra/target foram provisionados no LocalStack para alinhar a
+topologia efetiva ao contrato do publisher.
 aplicação usa `AUTHENTICATOR_EVENTBRIDGE_ENDPOINT_URL` para apontar o
 publisher compartilhado para o LocalStack; em AWS real, a variável deve ficar
 ausente.
+
+## Resultado
+
+**PASS** - o barramento `authentication-bus` foi criado, a regra
+`authentication-events-to-sqs` ficou `ENABLED` e possui um target SQS.
 
 ## Fluxo de certificação
 

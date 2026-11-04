@@ -28,7 +28,7 @@ def trusted_tenant(request: Request, header_tenant: str | None) -> str:
     context = getattr(request.state, "tenant_context", None)
     tenant_id = getattr(context, "tenant_id", None)
     if not isinstance(tenant_id, str) or not tenant_id.strip():
-        raise HTTPException(status_code=403, detail="A trusted tenant context is required.")
+        raise HTTPException(status_code=403, detail="A trusted tenant context is required.1")
     if header_tenant is not None and header_tenant != tenant_id:
         raise HTTPException(status_code=403, detail="Tenant scope does not match trusted context.")
     return tenant_id

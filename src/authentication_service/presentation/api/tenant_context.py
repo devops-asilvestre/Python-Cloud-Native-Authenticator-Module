@@ -62,7 +62,10 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
         self._resolver = resolver
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
-        if not request.url.path.startswith("/authentication"):
+        if not (
+            request.url.path.startswith("/users")
+            or request.url.path.startswith("/authentication")
+        ):
             return await call_next(request)
         try:
             request.state.tenant_context = await self._resolver.resolve(request)
