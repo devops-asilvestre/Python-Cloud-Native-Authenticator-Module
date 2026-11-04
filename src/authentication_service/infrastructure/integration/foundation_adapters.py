@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from authentication_service.application.ports import IdentityDirectory, TenantValidator
+from authentication_service.domain.exceptions import InvalidCredentialState
 from identity_service.domain.repositories import UserRepository
 from identity_service.domain.value_objects import UserId, UserStatusValue
 from tenant_service.domain.repositories import TenantRepository
@@ -24,4 +25,4 @@ class IdentityDirectoryAdapter(IdentityDirectory):
     async def ensure_active_user(self, tenant_id: str, user_id: str) -> None:
         user = await self._repository.get_by_id(tenant_id, UserId(user_id))
         if user is None or user.status.value is not UserStatusValue.ACTIVE:
-            raise ValueError("User is not active.")
+            raise InvalidCredentialState("User is not active or does not exist.")

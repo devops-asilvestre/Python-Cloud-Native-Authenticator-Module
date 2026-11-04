@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from identity_service.domain.entities import User
+from identity_service.domain.value_objects import UserType
 
 
 class UserCreateRequest(BaseModel):
@@ -14,7 +15,7 @@ class UserCreateRequest(BaseModel):
     given_name: str = Field(min_length=2, max_length=100)
     family_name: str = Field(min_length=2, max_length=150)
     phone_number: str
-    type: str
+    type: UserType
     metadata: dict[str, str | int | float | bool | None] = Field(default_factory=dict)
 
 
