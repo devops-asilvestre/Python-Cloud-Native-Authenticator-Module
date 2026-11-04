@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local development launcher may contain machine-specific credentials
+start-local.bat

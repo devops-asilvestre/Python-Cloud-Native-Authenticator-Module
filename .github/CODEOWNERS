@@ -1,0 +1,23 @@
+# Default Owner
+
+* @devops-asilvestre
+
+# Source Code
+
+/src/ @devops-asilvestre
+
+# Infrastructure
+
+/infrastructure/ @devops-asilvestre
+
+# Documentation
+
+/docs/ @devops-asilvestre
+
+# GitHub Configuration
+
+/.github/ @devops-asilvestre
+
+# Tests
+
+/tests/ @devops-asilvestre

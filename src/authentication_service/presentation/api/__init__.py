@@ -1,0 +1,1 @@
+"""Authentication REST API."""
